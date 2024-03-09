@@ -1,0 +1,212 @@
+import java.util.Scanner;
+
+class Node {
+    int key;
+    Node left, right;
+
+    public Node(int value) {
+        key = value;
+        
+        left = right = null;
+    }
+}
+
+public class BinarySearchTree {
+    private Node root;
+
+    public BinarySearchTree() {
+        root = null;
+    }
+
+    // Insertion
+    public void insert(int key) {
+        root = insertRec(root, key);
+    }
+
+    private Node insertRec(Node root, int key) {
+        if (root == null) {
+            root = new Node(key);
+            return root;
+        }
+
+        if (key < root.key)
+            root.left = insertRec(root.left, key);
+        else if (key > root.key)
+            root.right = insertRec(root.right, key);
+
+        return root;
+    }
+
+    // Deletion
+public void delete(int key) {
+    root = deleteRec(root, key);
+}
+
+private Node deleteRec(Node root, int key) {
+    if (root == null)
+        return root;
+
+    if (key < root.key)
+        root.left = deleteRec(root.left, key);
+    else if (key > root.key)
+        root.right = deleteRec(root.right, key);
+    else {
+        if (root.left == null)
+            return root.right;
+        else if (root.right == null)
+            return root.left;
+
+        // Node with two children
+        root.key = findMaxValue(root.left);
+        root.left = deleteRec(root.left, root.key);
+    }
+
+    return root;
+}
+
+private int findMaxValue(Node root) {
+    int maxValue = root.key;
+    while (root.right != null) {
+        maxValue = root.right.key;
+        root = root.right;
+    }
+    return maxValue;
+}
+
+    // 1D Array Representation
+    public int[] toArray() {
+    int height = height(root);
+    int size = (int) Math.pow(2, height) - 1;
+    int[] array = new int[size];
+    toArrayUtil(root, array, 0);
+    return array;
+}
+
+private void toArrayUtil(Node root, int[] array, int index) {
+    if (root != null && index < array.length) {
+        toArrayUtil(root.left, array, 2 * index + 1);
+        toArrayUtil(root.right, array, 2 * index + 2);
+        array[index] = root.key;
+    }
+}
+
+private int height(Node root) {
+    if (root == null)
+        return 0;
+    else {
+        int leftHeight = height(root.left);
+        int rightHeight = height(root.right);
+
+        return Math.max(leftHeight, rightHeight) + 1;
+    }
+}
+    // Traversals
+    public void preorder() {
+        System.out.print("Preorder Traversal: ");
+        preorderTraversal(root);
+        System.out.println();
+    }
+
+    private void preorderTraversal(Node root) {
+        if (root != null) {
+            System.out.print(root.key + " ");
+            preorderTraversal(root.left);
+            preorderTraversal(root.right);
+        }
+    }
+
+    public void inorder() {
+        System.out.print("Inorder Traversal: ");
+        inorderTraversal(root);
+        System.out.println();
+    }
+
+    private void inorderTraversal(Node root) {
+        if (root != null) {
+            inorderTraversal(root.left);
+            System.out.print(root.key + " ");
+            inorderTraversal(root.right);
+        }
+    }
+
+    public void postorder() {
+        System.out.print("Postorder Traversal: ");
+        postorderTraversal(root);
+        System.out.println();
+    }
+
+    private void postorderTraversal(Node root) {
+        if (root != null) {
+            postorderTraversal(root.left);
+            postorderTraversal(root.right);
+            System.out.print(root.key + " ");
+        }
+    }
+
+    public int size(Node root) {
+        if (root == null)
+            return 0;
+        else
+            return (size(root.left) + 1 + size(root.right));
+    }
+
+    public static void main(String[] args) {
+    BinarySearchTree bst = new BinarySearchTree();
+    Scanner scanner = new Scanner(System.in);
+
+    // Directly accept the elements
+    System.out.println("Enter the elements (enter any non-integer to finish):");
+    while (scanner.hasNextInt()) {
+        int element = scanner.nextInt();
+        bst.insert(element);
+    }
+
+    // Display initial 1D array representation with index and element values
+    int[] initialArray = bst.toArray();
+    System.out.println("\nInitial 1D Array Representation:");
+    for (int i = 0; i < initialArray.length; i++) {
+        System.out.println("Index " + i + ": " + initialArray[i]);
+    }
+
+    // Display initial traversals
+    System.out.println("\nInitial Traversals:");
+    bst.preorder();
+    bst.inorder();
+    bst.postorder();
+
+    // Delete nodes
+    Scanner deleteScanner = new Scanner(System.in);
+    System.out.println("\nEnter the nodes to delete (enter any non-integer to finish):");
+    while (deleteScanner.hasNextInt()) {
+        int node = deleteScanner.nextInt();
+        bst.delete(node);
+        System.out.println("After deleting " + node + ":");
+        bst.inorder();
+    }
+    deleteScanner.close();
+
+    // Display updated 1D array representation with index and element values
+    int[] updatedArray = bst.toArray();
+    System.out.println("\nUpdated 1D Array Representation:");
+    for (int i = 0; i < updatedArray.length; i++) {
+        System.out.println("Index " + i + ": " + updatedArray[i]);
+    }
+
+    // Display updated traversals
+    System.out.println("\nUpdated Traversals:");
+    bst.preorder();
+    bst.inorder();
+    bst.postorder();
+
+    // Perform insertion (optional)
+    System.out.print("\nEnter a node to insert (enter any non-integer to skip insertion): ");
+    if (scanner.hasNextInt()) {
+        int newNode = scanner.nextInt();
+        bst.insert(newNode);
+        System.out.println("After inserting " + newNode + ":");
+        bst.inorder();
+    }
+
+        deleteScanner.close();
+    }
+}
